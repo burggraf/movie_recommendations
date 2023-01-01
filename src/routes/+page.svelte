@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { createClient, SupabaseClient } from '@supabase/supabase-js'
-  	import { onMount } from 'svelte'
 	const VITE_SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 	const VITE_SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY
 	const supabase: SupabaseClient = createClient(VITE_SUPABASE_URL, VITE_SUPABASE_KEY)
@@ -11,8 +10,14 @@
 	let favorites = ''
 	let recommendations: string = ''
 	let user: any = null
-	supabase.auth.onAuthStateChange((event, session) => {
+	supabase.auth.onAuthStateChange(async (event, session) => {
 		user = session?.user
+		if (user) {
+			await loadData()
+		} else {
+			favorites = ''
+			recommendations = ''
+		}
 	})
 
 	const signin = async () => {
@@ -91,9 +96,6 @@
 			recommendations = data[0]?.recommendations! || ''
 		}
 	}
-	onMount(async () => {
-		await loadData()
-	})
 </script>
 
 <h1>Movie Recommendations</h1>
