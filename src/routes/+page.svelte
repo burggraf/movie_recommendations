@@ -98,38 +98,34 @@
 	}
 </script>
 
-<h1>Movie Recommendations</h1>
+<h1 style="text-align: center;">Movie Recommendations</h1>
+
 {#if user}
-	<p>signed in as {user.email}</p>
-	<button on:click={signout}>sign out</button> 
+  <p style="text-align: center;">Signed in as {user.email} <button style="padding: 8px;margin: 8px;" on:click={signout}>Sign Out</button></p>
+  
 {:else}
-	<table border={0}>
-		<tr>
-			<td style="text-align: right;">email:</td>
-			<td><input type="email" bind:value={email} /></td>
-		</tr>
-		<tr>
-			<td style="text-align: right;">password:</td>
-			<td><input type="password" bind:value={password} /></td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td>
-			<td style="text-align: right;">
-				<button on:click={signin}>sign in</button>&nbsp;&nbsp;&nbsp;
-				<button on:click={signup}>sign up</button></td>
-		</tr>
-	</table>
-	 
-	
+  <form style="display: flex; flex-direction: column; max-width: 300px; margin: 0 auto;">
+    <label for="email">Email:</label>
+    <input type="email" id="email" bind:value={email} />
+    <label for="password">Password:</label>
+    <input type="password" id="password" bind:value={password} />
+    <div style="display: flex; justify-content: space-between;">
+      <button style="padding: 8px;margin: 8px;" on:click={signin}>Sign In</button>
+      <button style="padding: 8px;margin: 8px;" on:click={signup}>Sign Up</button>
+    </div>
+  </form>
 {/if}
+
 {#if errorMessage}
-	<p style="color: red;">{errorMessage}</p>
+  <p style="color: red; text-align: center;">{errorMessage}</p>
 {/if}
+
 {#if user}
-	<br/>
-	my favorite movies (one movie per line):<br/>
-	<textarea rows="15" cols="60" bind:value={favorites}></textarea><br/>
-	<button on:click={updateRecommendations}>Get Movie Recommendations</button><br/>
-	recommendations:<br/>
-	<textarea disabled={true} rows="15" cols="60" bind:value={recommendations}></textarea><br/>
+  <div style="display: flex; flex-direction: column; max-width: 600px; margin: 20px auto;">
+    <label for="favorites">My favorite movies (one movie per line):</label>
+    <textarea rows="15" cols="60" id="favorites" bind:value={favorites}></textarea>
+    <button on:click={updateRecommendations} style="align-self: center;padding: 8px;margin: 8px;">Get Movie Recommendations</button>
+    <label for="recommendations">Recommendations:</label>
+    <textarea disabled={true} rows="15" cols="60" id="recommendations" bind:value={recommendations}></textarea>
+  </div>
 {/if}
