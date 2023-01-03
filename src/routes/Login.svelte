@@ -44,7 +44,7 @@
 		}
 	}
 	const forgotpassword = async () => {
-		const { error } = await supabase.auth.resetPasswordForEmail(email)
+		const { error } = await supabase.auth.resetPasswordForEmail(email,{ redirectTo: window.location.origin })
 		if (error) {
 			errorMessage = error?.message || "unknown error"
 		} else {
