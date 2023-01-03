@@ -24,6 +24,7 @@
 
 	const checkHash = () => {
 		const hash = window.location.hash
+		console.log('hash', hash)
 		if (hash && hash.substring(0, 1) === '#') {
 			const tokens = hash.substring(1).split('&')
 			const entryPayload: any = {}
@@ -31,11 +32,18 @@
 				const pair = (token + '=').split('=')
 				entryPayload[pair[0]] = pair[1]
 			})
+			console.log('entryPayload', entryPayload)
 			if (entryPayload?.type === 'recovery') {
 				token = entryPayload.access_token
 				setTimeout(() => {
 					active = true
 				}, 1000)
+			} else if (entryPayload?.error_description) {
+				// decode the error description
+				const decode = (str: string) => {
+					return decodeURIComponent(str.replace(/\+/g, ' '))
+				}
+				console.log('error_description', decode(entryPayload.error_description))
 			}
 		}
 	}
