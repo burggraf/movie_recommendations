@@ -1,55 +1,16 @@
 <script lang="ts">
+	import Login from './Login.svelte'
+	import { user }from './user';
 	import { createClient, SupabaseClient } from '@supabase/supabase-js'
 	const VITE_SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
 	const VITE_SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY
 	const supabase: SupabaseClient = createClient(VITE_SUPABASE_URL, VITE_SUPABASE_KEY)
 
-	let email = ''
-	let password = ''
 	let errorMessage = ''
 	let favorites = ''
 	let recommendations: string = ''
-	let user: any = null
-	supabase.auth.onAuthStateChange(async (event, session) => {
-		user = session?.user
-		if (user) {
-			await loadData()
-		} else {
-			favorites = ''
-			recommendations = ''
-		}
-	})
+	$: $user && loadData()
 
-	const signin = async () => {
-		const { data, error } = await supabase.auth.signInWithPassword({
-			email: email,
-			password: password,
-		})
-		if (error?.message) {
-			errorMessage = error.message
-		} else {
-			errorMessage = ''
-		}
-	}
-	const signup = async () => {
-		const { data, error } = await supabase.auth.signUp({
-			email: email,
-			password: password,
-		})
-		if (error) {
-			errorMessage = error?.message || "unknown error"
-		} else {
-			errorMessage = ''
-		}
-	}
-	const signout = async () => {
-		const { error } = await supabase.auth.signOut()
-		if (error) {
-			errorMessage = error?.message || "unknown error"
-		} else {
-			errorMessage = ''
-		}
-	}		
 	const updateRecommendations = async () => {
 		const favoritesArray = (favorites+'\n').split('\n');
 		if (favoritesArray.length === 0) {
@@ -63,7 +24,7 @@
 		errorMessage = 'saving favorite movies...'
 		const { error: saveFavoritesError } = 
 			await supabase.from('movies').upsert({
-				userid: user.id,
+				userid: $user.id,
 				favorites: favoritesArray
 			})
 		if (saveFavoritesError) { 
@@ -88,6 +49,7 @@
 	}
 	const loadData = async () => {
 		const { data, error } = await supabase.from('movies').select('*')
+		console.log('loadData', data, error)
 		if (error) {
 			console.error('loadData', error)
 			errorMessage = error.message
@@ -100,27 +62,13 @@
 
 <h1 style="text-align: center;">Movie Recommendations</h1>
 
-{#if user}
-  <p style="text-align: center;">Signed in as {user.email} <button style="padding: 8px;margin: 8px;" on:click={signout}>Sign Out</button></p>
-  
-{:else}
-  <form style="display: flex; flex-direction: column; max-width: 300px; margin: 0 auto;">
-    <label for="email">Email:</label>
-    <input type="email" id="email" bind:value={email} />
-    <label for="password">Password:</label>
-    <input type="password" id="password" bind:value={password} />
-    <div style="display: flex; justify-content: space-between;">
-      <button style="padding: 8px;margin: 8px;" on:click={signin}>Sign In</button>
-      <button style="padding: 8px;margin: 8px;" on:click={signup}>Sign Up</button>
-    </div>
-  </form>
-{/if}
+<Login />
 
 {#if errorMessage}
   <p style="color: red; text-align: center;">{errorMessage}</p>
 {/if}
 
-{#if user}
+{#if $user}
   <div style="display: flex; flex-direction: column; max-width: 600px; margin: 20px auto;">
     <label for="favorites">My favorite movies (one movie per line):</label>
     <textarea rows="15" cols="60" id="favorites" bind:value={favorites}></textarea>
