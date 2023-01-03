@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Login from './Login.svelte'
+	import ResetPassword from './ResetPassword.svelte';
 	import { user }from './user';
 	import { createClient, SupabaseClient } from '@supabase/supabase-js'
 	const VITE_SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
@@ -49,7 +50,6 @@
 	}
 	const loadData = async () => {
 		const { data, error } = await supabase.from('movies').select('*')
-		console.log('loadData', data, error)
 		if (error) {
 			console.error('loadData', error)
 			errorMessage = error.message
@@ -63,6 +63,7 @@
 <h1 style="text-align: center;">Movie Recommendations</h1>
 
 <Login />
+<ResetPassword />
 
 {#if errorMessage}
   <p style="color: red; text-align: center;">{errorMessage}</p>
